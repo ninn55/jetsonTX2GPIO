@@ -8,10 +8,7 @@
 #include <fcntl.h>
 #include <poll.h>
 
-#ifdef RECORD
-#include <fstream>
-#include <time.h>
-#endif
+#include <sys/time.h>
 
 #include "jetsonGPIO.h"
 
@@ -110,11 +107,38 @@ int gpioSetDirection ( jetsonGPIO gpio, unsigned int out_flag )
 // Return: Success = 0 ; otherwise open file error
 int gpioSetValue ( jetsonGPIO gpio, unsigned int value )
 {
+#ifdef RECORD_LINUX
+	int fileDescriptorRecord;
+    char commandBufferRecord[MAX_BUF];
+	struct timeval  tv;
+	mode_t mode = S_IRWXU | S_IRWXG | S_IRWXO;
+	
+	gettimeofday(&tv, NULL);
+	double time_in_mill = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000 ;
+    snprintf(commandBufferRecord, sizeof(commandBufferRecord), RECORD_FILE "/gpio%d", gpio);
+    fileDescriptorRecord = open(commandBufferRecord, O_APPEND | O_CREAT | O_WRONLY, mode);
+    snprintf(commandBufferRecord, sizeof(commandBufferRecord), "%f,%d\n", time_in_mill, value);
+    printf(commandBufferRecord);
+    if(write(fileDescriptorRecord, commandBufferRecord, sizeof(commandBufferRecord)) < 0){
+    	printf("Error when write\n");
+    };
+    close(fileDescriptorRecord);
+#endif
+
 #ifdef RECORD
-	std::ofstream out;
-	out.open(RECORD_FILE + "/" + std::string(gpio), std::ios::app);
-	out << std::string(time(NULL)) << ',' << std::string(value);
-	out.close()
+	int fileDescriptorRecord;
+    char commandBufferRecord[MAX_BUF];
+	struct timeval  tv;
+	
+	gettimeofday(&tv, NULL);
+	double time_in_mill = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000 ;
+    snprintf(commandBufferRecord, sizeof(commandBufferRecord), RECORD_FILE "/gpio%d", gpio);
+    FILE *pF = fopen(commandBufferRecord, "a");
+    if(pF==NULL){
+    	printf("Error when opening\n");
+    }
+    fprintf(pF, "%f,%d\n", time_in_mill, value);
+    fclose(pF);
 #endif
     int fileDescriptor;
     char commandBuffer[MAX_BUF];

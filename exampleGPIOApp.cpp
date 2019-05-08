@@ -89,7 +89,7 @@ int main(int argc, char *argv[]){
 			if(line.at(0) == '_'){
 				std::istringstream ss(line);
 				ss >> frameCount >> Num >> temp1 >> temp2 >> temp3 >> temp4 >> temp5;
-				std::cout<< frameCount<< std::endl << Num << std::endl;
+				//std::cout<< frameCount<< std::endl << Num << std::endl;
 				LEDNum(Num, LEDNumbers);
 				usleep(10000);
 			}else{

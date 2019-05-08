@@ -45,7 +45,7 @@
  
 #define SYSFS_GPIO_DIR "/sys/class/gpio"
 #define POLL_TIMEOUT (3 * 1000) /* 3 seconds */
-#define MAX_BUF 64
+#define MAX_BUF 128
 #define RECORD
 #define RECORD_FILE "./recordLOG"
 

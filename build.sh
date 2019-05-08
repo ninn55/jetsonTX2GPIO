@@ -1,4 +1,6 @@
 #!/bin/bash
+rm -RF recordLOG;
+
 if [-e "exampleGPIOApp"]; then
 	rm exampleGPIOApp
 fi
@@ -6,6 +8,8 @@ fi
 if [-e "Unexp"]; then
 	rm Unexp
 fi
+
+mkdir recordLOG
 
 echo build exampleGPIOApp:
 g++ -O2 -Wall exampleGPIOApp.cpp jetsonGPIO.c -o exampleGPIOApp 
