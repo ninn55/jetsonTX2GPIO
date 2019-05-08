@@ -1,6 +1,7 @@
 /*
  * jetsonGPIO.h
  *
+ * Copyright (c) 2019 ninn55@github.com
  * Copyright (c) 2015 JetsonHacks
  * www.jetsonhacks.com
  *
