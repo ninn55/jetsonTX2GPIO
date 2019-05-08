@@ -32,11 +32,12 @@ void LEDBlink(jetsonGPIO gpio){
 
 int* decToBinary(int n) 
 { 
-    int binaryNum[5]; 
+    static int binaryNum[5] = {0}; 
    
     int i = 0; 
     while (n > 0) {  
-        binaryNum[i] = n % 2; 
+        binaryNum[i] = n % 2;
+        //std::cout << binaryNum[i] << std::endl;
         n = n / 2; 
         i++; 
     } 
@@ -47,6 +48,8 @@ int* decToBinary(int n)
 void LEDNum(int Num, jetsonTX2GPIONumber* gpio){
 	int* bin = decToBinary(Num);
 	for(int i = 0; i < 5; i++){
+		//std::cout << gpio[i] << std::endl;
+		//std::cout << bin[i] << std::endl;
 		gpioSetValue(gpio[i], bin[i]);
 	}
 }
@@ -79,19 +82,19 @@ int main(int argc, char *argv[]){
     
 	if(mode == "PlayBack"){
 		std::ifstream file(LOG_FILE);
-		std::string line, frameCount;
+		std::string line, frameCount, temp1, temp2, temp3, temp4, temp5;
 		std::stringstream ss;
 		int Num(0);
 		while (getline(file, line)) {
 			if(line.at(0) == '_'){
 				ss << line;
-				ss >> frameCount >> Num;
-				std::cout << Num << std::endl;
+				ss >> frameCount >> Num >> temp1 >> temp2 >> temp3 >> temp4 >> temp5;
+				std::cout<< frameCount<< std::endl << Num << std::endl;
 				LEDNum(Num, LEDNumbers);
-				usleep(100);
+				usleep(1000000);
 			}else{
 				LEDBlink(LEDBlk);
-				gpioSetEdge(LEDEdg, "rising");
+				//gpioSetEdge(LEDEdg, "rising");
 			}
 		}
 		file.close();
@@ -113,12 +116,12 @@ int main(int argc, char *argv[]){
 			if(line.at(0) == '_'){
 				ss << line;
 				ss >> frameCount >> Num;
-				std::cout << Num << std::endl;
+				//std::cout << Num << std::endl;
 				LEDNum(Num, LEDNumbers);
 				usleep(100);
 			}else{
 				LEDBlink(LEDBlk);
-				gpioSetEdge(LEDEdg, "rising");
+				//gpioSetEdge(LEDEdg, "rising");
 			}
 		}
 		std::cout<<"exited: "<<std::endl;
