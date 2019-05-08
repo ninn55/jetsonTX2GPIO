@@ -10,7 +10,7 @@
 #include <iostream>
 #include <string>
 #include <unistd.h>
-#include <conio.h>
+#include <sstream>
 #include "jetsonGPIO.h"
 
 #define LOG_FILE "../MobileNet-YOLO/outLog"
@@ -44,7 +44,7 @@ int* decToBinary(int n)
     return binaryNum; 
 } 
 
-void LEDNum(int Num, jetsonGPIO* gpio){
+void LEDNum(int Num, jetsonTX2GPIONumber* gpio){
 	int* bin = decToBinary(Num);
 	for(int i = 0; i < 5; i++){
 		gpioSetValue(gpio[i], bin[i]);
@@ -52,11 +52,12 @@ void LEDNum(int Num, jetsonGPIO* gpio){
 }
 
 int main(int argc, char *argv[]){
+	std::string mode;
 	
 	if(argc == 2){
-		std::string mode = *argv[1];
+		mode = argv[1];
 	}else{
-		std::string mode = "PlayBack";
+		mode = "PlayBack";
 	}
 
     std::cout << "Output the GPIO Pins" << std::endl;
@@ -69,24 +70,28 @@ int main(int argc, char *argv[]){
 	gpioSetDirection(LEDBlk,outputPin);
 	gpioSetDirection(LEDEdg,outputPin);
 	
-    jetsonTX2GPIONumber LEDNum[] = [gpio398, gpio298, gpio389, gpio395, gpio388];
+    jetsonTX2GPIONumber LEDNumbers[] = {gpio398, gpio298, gpio389, gpio395, gpio388};
 	
 	for(int i = 0; i < 5; i++){
-		gpioExport(LED[i]);
-		gpioSetDirection(LED[i],outputPin);
+		gpioExport(LEDNumbers[i]);
+		gpioSetDirection(LEDNumbers[i],outputPin);
 	}
     
 	if(mode == "PlayBack"){
 		std::ifstream file(LOG_FILE);
-		std::string line;
+		std::string line, frameCount;
+		std::stringstream ss;
+		int Num(0);
 		while (getline(file, line)) {
-			if(line.front() == "_"){
-				int Num = static_cast<int>(line.substr(1, input.find(" ")));
-				LEDNum(Num, LEDNum);
+			if(line.at(0) == '_'){
+				ss << line;
+				ss >> frameCount >> Num;
+				std::cout << Num << std::endl;
+				LEDNum(Num, LEDNumbers);
 				usleep(100);
 			}else{
 				LEDBlink(LEDBlk);
-				gpioSetEdge(LEDEdg, "rising")
+				gpioSetEdge(LEDEdg, "rising");
 			}
 		}
 		file.close();
@@ -95,32 +100,37 @@ int main(int argc, char *argv[]){
 	}else if(mode =="Online"){
 		std::ifstream file(LOG_FILE);
 		char flag;
+		std::string line, frameCount;
+		std::stringstream ss;
+		int Num(0);
 		std::cout<<"press esc to exit! "<<std::endl;
 		while(true){
-			flag = getch();
+			flag = getchar();
 			if (flag == 27) { file.close(); break; }
 			
 			std::string line = getLastLine(file);
 			
-			if(line.front() == "_"){
-				int Num = static_cast<int>(line.substr(1, input.find(" ")));
-				LEDNum(Num, LEDNum);
+			if(line.at(0) == '_'){
+				ss << line;
+				ss >> frameCount >> Num;
+				std::cout << Num << std::endl;
+				LEDNum(Num, LEDNumbers);
 				usleep(100);
 			}else{
 				LEDBlink(LEDBlk);
-				gpioSetEdge(LEDEdg, "rising")
+				gpioSetEdge(LEDEdg, "rising");
 			}
 		}
 		std::cout<<"exited: "<<std::endl;
 	}else{
-		std::out << "Arguement ERROR" << std::endl;
+		std::cout << "Arguement ERROR" << std::endl;
 	}
 
     std::cout << "GPIO output finished." << std::endl;
 	gpioUnexport(LEDBlk);
 	gpioUnexport(LEDEdg);
-	for(int i = 0, i < 5, i++){
-		gpioUnexport(LED[i]);
+	for(int i = 0; i < 5; i++){
+		gpioUnexport(LEDNumbers[i]);
 	}
     return 0;
 }
