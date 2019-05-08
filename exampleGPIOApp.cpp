@@ -87,14 +87,15 @@ int main(int argc, char *argv[]){
 		int Num(0);
 		while (getline(file, line)) {
 			if(line.at(0) == '_'){
-				ss << line;
+				std::istringstream ss(line);
 				ss >> frameCount >> Num >> temp1 >> temp2 >> temp3 >> temp4 >> temp5;
 				std::cout<< frameCount<< std::endl << Num << std::endl;
 				LEDNum(Num, LEDNumbers);
-				usleep(1000000);
+				LEDBlink(LEDBlk);
+				usleep(10000);
 			}else{
 				LEDBlink(LEDBlk);
-				//gpioSetEdge(LEDEdg, "rising");
+				gpioSetEdge(LEDEdg, "rising");
 			}
 		}
 		file.close();
