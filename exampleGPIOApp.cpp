@@ -91,7 +91,6 @@ int main(int argc, char *argv[]){
 				ss >> frameCount >> Num >> temp1 >> temp2 >> temp3 >> temp4 >> temp5;
 				std::cout<< frameCount<< std::endl << Num << std::endl;
 				LEDNum(Num, LEDNumbers);
-				LEDBlink(LEDBlk);
 				usleep(10000);
 			}else{
 				LEDNum(0, LEDNumbers);

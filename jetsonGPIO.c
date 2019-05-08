@@ -7,6 +7,12 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <poll.h>
+
+#ifdef RECORD
+#include <fstream>
+#include <time.h>
+#endif
+
 #include "jetsonGPIO.h"
 
 
@@ -104,6 +110,12 @@ int gpioSetDirection ( jetsonGPIO gpio, unsigned int out_flag )
 // Return: Success = 0 ; otherwise open file error
 int gpioSetValue ( jetsonGPIO gpio, unsigned int value )
 {
+#ifdef RECORD
+	std::ofstream out;
+	out.open(RECORD_FILE + "/" + std::string(gpio), std::ios::app);
+	out << std::string(time(NULL)) << ',' << std::string(value);
+	out.close()
+#endif
     int fileDescriptor;
     char commandBuffer[MAX_BUF];
 
