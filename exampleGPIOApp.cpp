@@ -94,7 +94,9 @@ int main(int argc, char *argv[]){
 				LEDBlink(LEDBlk);
 				usleep(10000);
 			}else{
+				LEDNum(0, LEDNumbers);
 				LEDBlink(LEDBlk);
+				usleep(10000);
 				//gpioSetEdge(LEDEdg, "rising");
 			}
 		}
