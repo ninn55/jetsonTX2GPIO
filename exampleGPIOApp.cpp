@@ -95,7 +95,7 @@ int main(int argc, char *argv[]){
 				usleep(10000);
 			}else{
 				LEDBlink(LEDBlk);
-				gpioSetEdge(LEDEdg, "rising");
+				//gpioSetEdge(LEDEdg, "rising");
 			}
 		}
 		file.close();
